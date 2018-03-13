@@ -1,4 +1,34 @@
 import sys
+import random
+
+
+# Generates a graph with n vertices and m edges
+def newGraph(n: int, m: int):
+    if n < 2:
+        raise ValueError
+
+    if m > (n * (n - 1) / 2):
+        raise ValueError
+
+    if m < n - 1:
+        raise ValueError
+
+    generator = random.SystemRandom()
+
+    graph = [[0 for x in range(0, n)] for y in range(0, n)]
+    for i in range(0, n - 1):
+        graph[i][i + 1] = graph[i + 1][i] = generator.randint(1, 10 ** 9)
+
+    for i in range(0, m - n + 1):
+        a = b = 0
+        while True:
+            a = generator.randint(0, n - 1)
+            b = generator.randint(0, n - 1)
+            if (True not in (a == x for x in [a - 1, a, a + 1]) and graph[a][b] == 0):
+                break
+        graph[a][b] = graph[b][a] = generator.randint(1, 10 ** 9)
+
+    return graph
 
 
 def MSP_PRIM(n, graph):
