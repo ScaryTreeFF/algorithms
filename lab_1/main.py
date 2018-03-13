@@ -9,7 +9,6 @@ for word in read_data:
 
 table.print()
 
-print(table.find('qwerty'))
 print(table.find('aaa'))
 print(table.find('asdf'))
 print(table.find('zasf'))

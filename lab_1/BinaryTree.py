@@ -42,7 +42,7 @@ class BinaryTree:
             return node
         elif (value < node.data and node.left is not None):
             self._find(value, node.left)
-        elif (value > node.value and node.right is not None):
+        elif (value > node.data and node.right is not None):
             self._find(value, node.right)
         else:
             return None
