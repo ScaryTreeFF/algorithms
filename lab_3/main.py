@@ -1,9 +1,10 @@
 import sys
 import random
+import timeit
 
 
 # Generates a graph with n vertices and m edges
-def newGraph(n: int, m: int):
+def newGraph(n: int, m: int, q: int, r: int):
     if n < 2:
         raise ValueError
 
@@ -17,24 +18,27 @@ def newGraph(n: int, m: int):
 
     graph = [[0 for x in range(0, n)] for y in range(0, n)]
     for i in range(0, n - 1):
-        graph[i][i + 1] = graph[i + 1][i] = generator.randint(1, 10 ** 9)
+        graph[i][i + 1] = graph[i + 1][i] = generator.randint(q, r)
 
     for i in range(0, m - n + 1):
         a = b = 0
         while True:
             a = generator.randint(0, n - 1)
             b = generator.randint(0, n - 1)
-            if (True not in (a == x for x in [a - 1, a, a + 1]) and graph[a][b] == 0):
+            if ((a > b + 1 or a < b - 1) and graph[a][b] == 0):
                 break
-        graph[a][b] = graph[b][a] = generator.randint(1, 10 ** 9)
+        graph[a][b] = graph[b][a] = generator.randint(q, r)
 
     return graph
 
 
 def MSP_PRIM(n, graph):
-    used = [False for i in range(n)]
-    min_e = [sys.maxsize for i in range(n)]
-    sel_e = [-1 for i in range(n)]
+    begin = timeit.default_timer()
+
+    MSP = []
+    used = [False for i in range(n)]         # visited vertices
+    min_e = [sys.maxsize for i in range(n)]  # min distance from curr vertice to others
+    sel_e = [-1 for i in range(n)]           # second part of the edge
     min_e[0] = 0
 
     for i in range(n):
@@ -49,25 +53,34 @@ def MSP_PRIM(n, graph):
 
         used[v] = True
         if (sel_e[v] != -1):
-            print("{} {}".format(v, sel_e[v]))
+            MSP.append((v, sel_e[v]))
 
         for to in range(n):
             if (graph[v][to] < min_e[to] and graph[v][to] != 0):
                 min_e[to] = graph[v][to]
                 sel_e[to] = v
 
+        end = timeit.default_timer()
+        return (end - begin)  # return elapsed time in seconds
+
 
 def MSP_KRUSKAL(n, edges):      # edges = [(weight, start, end), ...]
+    begin = timeit.default_timer()
+
+    MSP = []
     edges.sort()
     comp = [i for i in range(n)]
     for weight, start, end in edges:
         if comp[start] != comp[end]:
-            print("{} {}".format(start, end))
+            MSP.append((start, end))
             a = comp[start]
             b = comp[end]
             for i in range(n):
                 if comp[i] == b:
                     comp[i] = a
+
+    end = timeit.default_timer()
+    return (end - begin)
 
 
 def invert_graph_to_edges(n, graph):
@@ -95,7 +108,22 @@ graph2 = [
         [0, 3, 6, 0, 0, 6],
         [0, 0, 4, 2, 6, 0],
         ]
+q = 1
+r = 10 ** 6
 
-# MSP_PRIM(6, graph2)
-print("============")
-MSP_KRUSKAL(6, invert_graph_to_edges(graph2))
+
+with open('time_prim.txt', 'w') as file1:
+    with open('time_kruskal.txt', 'w') as file2:
+        for n in range(100, 10001, 100):
+            m = int(n ** 2 / 10)
+
+            G = newGraph(n, m, q, r)
+
+            time_prim = MSP_PRIM(n, G)
+            time_kruskal = MSP_KRUSKAL(n, invert_graph_to_edges(n, G))
+
+            file1.write(str(time_prim) + ' ')
+            file2.write(str(time_kruskal) + ' ')
+
+            print("n : {}\t m : {}\t time_prim : {}\t time_kruskal : {}".format(
+                    n, m, time_prim, time_kruskal))
