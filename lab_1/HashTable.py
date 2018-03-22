@@ -8,7 +8,7 @@ class HashTable:
         self.table = [tree.BinaryTree() for i in range(capacity)]
 
     def _hash_func(self, value):
-        return sum([(ord(c) - 32) for c in value[:3]])  # ord(' ') = 32
+        return sum([(ord(c) - ord(' ') + 1) for c in value[:3]])
 
     def put(self, value):
         self.table[self._hash_func(value)].put(value)

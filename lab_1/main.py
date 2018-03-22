@@ -8,7 +8,3 @@ for word in read_data:
     table.put(word)
 
 table.print()
-
-print(table.find('aaa'))
-print(table.find('asdf'))
-print(table.find('zasf'))
