@@ -1,6 +1,5 @@
 from collections import defaultdict
-# import Heap
-from heapq import heappush, heappop
+import Heap
 import random
 import timeit
 '''
@@ -47,19 +46,15 @@ def Dijkstra(edges, start, d):
     begin = timeit.default_timer()
 
     A = [None] * len(edges)
-    # queue = Heap.Heap(d)
-    # queue.insert((0, start))
-    queue = [(0, start)]
-    # while queue.size != 0:
-    #     path_len, v = queue.pop()
-    while queue:
-        path_len, v = heappop(queue)
+    queue = Heap.Heap(d)
+    queue.insert((0, start))
+    while queue.size != 0:
+        path_len, v = queue.pop()
         if A[v] is None:  # v is unvisited
             A[v] = path_len
             for w, edge_len in edges[v].items():
                 if A[w] is None:
-                    heappush(queue, (path_len + edge_len, w))
-                    # queue.insert((path_len + edge_len, w))
+                    queue.insert((path_len + edge_len, w))
 
     # to give same result as original, assign zero distance to unreachable vertices
     # return [0 if x is None else x for x in A]
@@ -81,23 +76,21 @@ def invert_graph_to_edges(graph):
 q = 1
 r = 10 ** 6
 
-with open('time_binary-c.txt', 'a') as file1:
-    with open('time_ternary-a.txt', 'a') as file2:
-        for n in range(100, 5001, 100):
-            m = int(n ** 2 / 10)
+
+with open('time_binary-b.txt', 'a') as file1:
+    with open('time_ternary-b.txt', 'a') as file2:
+        for n in range(2000, 5001, 100):
+            m = int(n * (n-1) / 2)
 
             G = newGraph(n, m, q, r)
 
             time_binary = Dijkstra(invert_graph_to_edges(G), 0, 2)
-            # time_ternary = Dijkstra(invert_graph_to_edges(G), 0, 3)
+            time_ternary = Dijkstra(invert_graph_to_edges(G), 0, 3)
 
             file1.write(str(time_binary) + ' ')
-            # file2.write(str(time_ternary) + ' ')
+            file2.write(str(time_ternary) + ' ')
             file1.flush()
-            # file2.flush()
+            file2.flush()
 
-            # print("n : {}\t m : {}\t time_binary : {}\t time_ternary : {}".format(
-                    #  n, m, time_binary, time_ternary))
-
-            print("n : {}\t m : {}\t time_binary : {}".format(
-                    n, m, time_binary))
+            print("n : {}\t m : {}\t time_binary : {}\t time_ternary : {}".format(
+                    n, m, time_binary, time_ternary))
